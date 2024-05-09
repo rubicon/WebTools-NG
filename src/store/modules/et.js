@@ -1,6 +1,4 @@
-//import {et, excel2} from '../../components/modules/ExportTools/scripts/et'
-import {et} from '../../components/modules/ExportTools/scripts/et'
-//import { etHelper } from '../../components/modules/ExportTools/scripts/ethelper'
+import { etHelper } from '../../components/modules/ExportTools/scripts/ethelper'
 
 const log = require('electron-log');
 console.log = log.log;
@@ -49,7 +47,7 @@ const actions = {
       log.info("fetchSections called")
       var baseURL = getters.getSelectedServerAddress
       var accessToken = getters.getSelectedServerToken
-      commit('UPDATE_SECTIONS', await et.getSections(baseURL, accessToken))
+      commit('UPDATE_SECTIONS', await etHelper.getSections(baseURL, accessToken))
   }
 }
 

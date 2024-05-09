@@ -1,17 +1,17 @@
 <template>
-    <b-container fluid>
-        <div class="col-lg-10 col-md-12 col-xs-12">
-            <h1>{{ $t("Modules.ET.Custom.Title") }}</h1>
-            <p>{{ $t("Modules.ET.Custom.Description") }}</p>
+    <b-container class="m-2 mt-2">
+        <div>   <!-- Title and desc -->
+            <h2>
+                {{ $t(`Modules.ET.Custom.Title`) }}
+            </h2>
+            <h5>{{ $t(`Modules.ET.Custom.Description`) }}</h5>
         </div>
-        <br />
-
+        <br>
         <!-- Media type to export -->
-        <b-form-group id="etTypeGroup" v-bind:label="$t('Modules.ET.Custom.SelCustType')" label-size="lg" label-class="font-weight-bold pt-0">
-            <b-tooltip target="etTypeGroup" triggers="hover">
-                {{ $t('Modules.ET.Custom.TT-CustType') }}
-            </b-tooltip>
+        <b-form-group>
+            <WTNGttlabel tt="Modules.ET.Custom.TT-CustType" label="Modules.ET.Custom.SelCustType" />
             <b-form-select
+                style="width: 50%"
                 v-model="selMediaType"
                 id="mediaType"
                 :options="optionsMediaType"
@@ -19,13 +19,11 @@
                 name="mediaType">
             </b-form-select>
         </b-form-group>
-
         <div> <!-- Select Custom Level -->
-            <b-form-group id="etLevelGroup" v-bind:label="$t('Modules.ET.Custom.CustomLevel')" label-size="lg" label-class="font-weight-bold pt-0">
-                <b-tooltip target="etLevelGroup" triggers="hover">
-                    {{ $t('Modules.ET.Custom.TT-ETEditLevel') }}
-                </b-tooltip>
+            <b-form-group>
+                <WTNGttlabel tt="Modules.ET.Custom.TT-ETEditLevel" label="Modules.ET.Custom.CustomLevel" />
                 <b-form-select
+                    style="width: 50%"
                     class="form-control"
                     v-model="selCustLevel"
                     ref="selLevel"
@@ -36,68 +34,69 @@
                 </b-form-select>
             </b-form-group>
         </div>
-
-        <b-modal ref="showNewLevel" hide-footer v-bind:title=this.customTitle >
-          <div class="d-block text-center">
-              <b-form-input v-model="NewLevelName" v-bind:placeholder=this.NewLevelInputTxt ></b-form-input>
-          </div>
-          <b-button class="mt-3" variant="outline-primary" block @click="addNewLevel">{{ this.NewLevelSaveTxt }}</b-button>
+        <b-modal ref="showNewLevel" hide-footer v-bind:title=this.customTitle @hide="newLevelHidden">
+            <div class="d-block text-center">
+                <b-form-input v-model="NewLevelName" v-bind:placeholder=this.NewLevelInputTxt></b-form-input>
+            </div>
+            <b-button class="mt-3" variant="outline-primary" block @click="addNewLevel" :disabled="this.btnAddNewLevelEnabled">{{ this.NewLevelSaveTxt }}</b-button>
         </b-modal>
-
         <b-modal ref="confirmDeleteLevel" hide-footer v-bind:title=this.deleteLevel >
-          <div class="d-block text-center">
-              {{ $t('Modules.ET.Custom.confirmDelete', [this.selCustLevel]) }}
-          </div>
-          <b-button class="mt-3" variant="info" block @click="deleteClose">{{ $t('Modules.ET.Custom.Cancel') }}</b-button>
-          <b-button class="mt-3" variant="danger" block @click="deleteCustomLevel">{{ $t('Modules.ET.Custom.Delete') }}</b-button>
+            <div class="d-block text-center">
+                {{ $t('Modules.ET.Custom.confirmDelete', [this.selCustLevel]) }}
+            </div>
+            <b-button class="mt-3" variant="info" block @click="deleteClose">{{ $t('Modules.ET.Custom.Cancel') }}</b-button>
+            <b-button class="mt-3" variant="danger" block @click="deleteCustomLevel">{{ $t('Modules.ET.Custom.Delete') }}</b-button>
         </b-modal>
-
-        <!-- Buttons -->
-        <div id="buttons" class="text-center">
+        <div id="buttons" class="text-center"> <!-- Buttons -->
             <b-button-group >
-                <b-button variant="success" class="mr-1" @click="saveCustomLevel"> {{ $t('Modules.ET.Custom.btnSave') }} </b-button>
+                <b-button variant="success" class="mr-1" :disabled="this.btnSaveEnabled == 0" @click="saveCustomLevel"> {{ $t('Modules.ET.Custom.btnSave') }} </b-button>
                 <b-button variant="danger" class="mr-1" :disabled="this.btnDeleteEnabled == 0" @click="confirmDeleteLevel">{{ $t('Modules.ET.Custom.btnDelete') }}</b-button>
             </b-button-group>
         </div>
-
-        <div class="row">
-            <div class="col-md3">
-                <div id="rowheader" class="font-weight-bold pt-0">
-                    {{ $t('Modules.ET.Custom.availFields') }}
-                </div>
-                <draggable class="list-group" :list="fieldList" group="fields">
-                    <div class="list-group-item" v-for="(element) in fieldList" :key="element.name">
-                        {{ element.name }}
-                    </div>
-                </draggable>
-            </div>
-
-            <div class="col-md3">
-                <div id="rowheader" class="font-weight-bold pt-0">
-                    {{ $t('Modules.ET.Custom.customFields') }}
-                </div>
-                <draggable class="list-group" :list="resultList" group="fields">
-                    <div class="list-group-item" v-for="(element) in resultList" :key="element.name">
-                        {{ element.name }}
-                    </div>
-                </draggable>
-            </div>
-        </div>
-
+        <b-container fluid>
+            <b-row>
+                <b-col cols="6">
+                    <b-card-group deck>
+                        <b-card no-body :header= "$t(`Modules.ET.Custom.availFields`)" class="font-weight-bold pt-0">
+                            <b-list-group>
+                                <draggable class="list-group" :list="fieldList" group="fields">
+                                    <div class="list-group-item font-weight-normal" v-for="(element) in fieldList" :key="element.name">
+                                        {{ element.name }}
+                                    </div>
+                                </draggable>
+                            </b-list-group>
+                        </b-card>
+                    </b-card-group>
+                </b-col>
+                <b-col cols="6">
+                    <b-card-group deck>
+                        <b-card no-body :header="$t('Modules.ET.Custom.customFields')" class="font-weight-bold pt-0">
+                            <draggable class="list-group" :list="resultList" group="fields">
+                                <div class="list-group-item font-weight-normal" v-for="(element) in resultList" :key="element.name">
+                                    {{ element.name }}
+                                </div>
+                            </draggable>
+                        </b-card>
+                    </b-card-group>
+                </b-col>
+            </b-row>
+        </b-container>
     </b-container>
 </template>
 
 <script>
   import { et } from "../scripts/et";
   import i18n from '../../../../i18n';
-  import { wtconfig } from '../../General/wtutils';
-  import draggable from 'vuedraggable'
+  import { wtconfig, dialog } from '../../General/wtutils';
+  import draggable from 'vuedraggable';
+  import WTNGttlabel from '../../General/wtng-ttlabel.vue'
 
   const log = require("electron-log");
 
   export default {
     components: {
         draggable,
+        WTNGttlabel
     },
     data() {
         return {
@@ -106,7 +105,7 @@
                 { text: i18n.t('Modules.ET.Custom.optCustExpType.Movies'), value: et.ETmediaType.Movie, disabled: false },
                 { text: i18n.t('Modules.ET.Custom.optCustExpType.TVSeries'), value: et.ETmediaType.Show, disabled: false },
                 { text: i18n.t('Modules.ET.Custom.optCustExpType.TVEpisodes'), value: et.ETmediaType.Episode, disabled: false },
-                { text: i18n.t('Modules.ET.Custom.optCustExpType.AudioArtist'), value: et.ETmediaType.Album, disabled: false },
+                { text: i18n.t('Modules.ET.Custom.optCustExpType.AudioArtist'), value: et.ETmediaType.Artist, disabled: false },
                 { text: i18n.t('Modules.ET.Custom.optCustExpType.AudioAlbum'), value: et.ETmediaType.Album, disabled: false },
                 { text: i18n.t('Modules.ET.Custom.optCustExpType.AudioTrack'), value: et.ETmediaType.Track, disabled: false },
                 { text: i18n.t('Modules.ET.Custom.optCustExpType.Photos'), value: et.ETmediaType.Photo, disabled: false },
@@ -125,11 +124,19 @@
             delayedDragging: false,
             fieldList: [],
             btnDeleteEnabled: false,
+            btnSaveEnabled: false,
+            btnAddNewLevelEnabled: true,
             optionsLevels: null,
             resultList: []
         }
     },
     watch: {
+        NewLevelName(){
+            this.btnAddNewLevelEnabled = (this.NewLevelName == '');
+        },
+        selCustLevel(){
+            this.btnSaveEnabled = ( (this.selCustLevel != "") && ( this.selCustLevel != "NewLevel"));
+        },
         isDragging(newValue) {
             if (newValue) {
                 this.delayedDragging = true;
@@ -159,20 +166,41 @@
         this.genExportLevels();
     },
     methods: {
+        newLevelHidden(){
+            if (this.NewLevelName === '')
+            {
+                this.selCustLevel = '';
+            }
+        },
         getCustomLevel() {
             log.debug(`Customlevel ${this.selCustLevel} selected`);
             if (this.selCustLevel != 'NewLevel'){
                 // Get fields from config.json file
-                let custLevel = wtconfig.get(`ET.CustomLevels.${this.selMediaType}.level.${this.selCustLevel}`)
+                let custLevel = wtconfig.get(`ET.CustomLevels.${this.selMediaType}.level.${this.selCustLevel}`);
+                // Do we need to export art?
+                if ( wtconfig.get(`ET.CustomLevels.${this.selMediaType}.Art.${this.selCustLevel}`, false) )
+                {
+                    custLevel.push("Export Art");
+                }
+                // Do we need to export show art?
+                if ( wtconfig.get(`ET.CustomLevels.${this.selMediaType}.ShowArt.${this.selCustLevel}`, false) )
+                {
+                    custLevel.push("Export Show Art");
+                }
                 // Do we need to export posters?
                 if ( wtconfig.get(`ET.CustomLevels.${this.selMediaType}.Posters.${this.selCustLevel}`, false) )
                 {
                     custLevel.push("Export Posters");
                 }
-                // Do we need to export art?
-                if ( wtconfig.get(`ET.CustomLevels.${this.selMediaType}.Art.${this.selCustLevel}`, false) )
+                // Do we need to export season posters?
+                if ( wtconfig.get(`ET.CustomLevels.${this.selMediaType}.SeasonPosters.${this.selCustLevel}`, false) )
                 {
-                    custLevel.push("Export Art");
+                    custLevel.push("Export Season Posters");
+                }
+                // Do we need to export show posters?
+                if ( wtconfig.get(`ET.CustomLevels.${this.selMediaType}.ShowPosters.${this.selCustLevel}`, false) )
+                {
+                    custLevel.push("Export Show Posters");
                 }
                 // Add to resultList
                 this.resultList = custLevel.map((name, index) => {
@@ -291,9 +319,9 @@
                     }
                 }
             });
-            log.info(`LevelCount for "${this.selCustLevel}" of the type "${this.selMediaType}" was calculated as:${curLevel}`);
+            log.info(`[custom.vue] (updateLevelCount) LevelCount for "${this.selCustLevel}" of the type "${this.selMediaType}" was calculated as:${curLevel}`);
             wtconfig.set(`ET.CustomLevels.${this.selMediaType}.LevelCount.${this.selCustLevel}`, curLevel);
-            log.info(`includeFields for "${this.selCustLevel}" of the type "${this.selMediaType}" was calculated as:${includeFields}`);
+            log.info(`[custom.vue] (updateLevelCount) includeFields for "${this.selCustLevel}" of the type "${this.selMediaType}" was calculated as:${includeFields}`);
             wtconfig.set(`ET.CustomLevels.${this.selMediaType}.Include.${this.selCustLevel}`, includeFields);
         },
         changeType: function() {
@@ -314,14 +342,17 @@
             wtconfig.delete(`ET.CustomLevels.${this.selMediaType}.level.${this.selCustLevel}`);
             wtconfig.delete(`ET.CustomLevels.${this.selMediaType}.Posters.${this.selCustLevel}`);
             wtconfig.delete(`ET.CustomLevels.${this.selMediaType}.Art.${this.selCustLevel}`);
+            wtconfig.delete(`ET.CustomLevels.${this.selMediaType}.Include.${this.selCustLevel}`);
             this.genExportLevels();
             this.resultList = [];
         },
         saveCustomLevel() {
             let result = []
             let bExportArt = false;
-
+            let bExportShowArt = false;
             let bExportPosters = false;
+            let bExportSeasonPosters = false;
+            let bExportShowPosters = false;
             for(var k in this.resultList) {
                 if (this.resultList[k].name == 'Export Posters')
                 {
@@ -331,13 +362,28 @@
                 {
                     bExportArt = true;
                 }
+                else if (this.resultList[k].name == 'Export Show Art')
+                {
+                    bExportShowArt = true;
+                }
+                else if (this.resultList[k].name == 'Export Season Posters')
+                {
+                    bExportSeasonPosters = true;
+                }
+                else if (this.resultList[k].name == 'Export Show Posters')
+                {
+                    bExportShowPosters = true;
+                }
                 else
                 {
                     result.push(this.resultList[k].name);
                 }
             }
             wtconfig.set(`ET.CustomLevels.${this.selMediaType}.Posters.${this.selCustLevel}`, bExportPosters);
+            wtconfig.set(`ET.CustomLevels.${this.selMediaType}.SeasonPosters.${this.selCustLevel}`, bExportSeasonPosters);
+            wtconfig.set(`ET.CustomLevels.${this.selMediaType}.ShowPosters.${this.selCustLevel}`, bExportShowPosters);
             wtconfig.set(`ET.CustomLevels.${this.selMediaType}.Art.${this.selCustLevel}`, bExportArt);
+            wtconfig.set(`ET.CustomLevels.${this.selMediaType}.ShowArt.${this.selCustLevel}`, bExportShowArt);
             // Get current level names
             let curLevel = wtconfig.get(`ET.CustomLevels.${this.selMediaType}.level`);
             // Add new level to JSON
@@ -346,7 +392,7 @@
             wtconfig.set(`ET.CustomLevels.${this.selMediaType}.level`, curLevel);
             // Now we need to update levelcount for the level
             this.updateLevelCount();
-            alert( i18n.t("Modules.ET.Custom.AlertSaved"));
+            dialog.ShowMsgBox( i18n.t("Modules.ET.Custom.AlertSaved"), 'info', i18n.t("Modules.ET.Custom.Title"), [i18n.t("Common.Ok")]);
             this.getCustomLevel();
         },
         confirmDeleteLevel() {
@@ -354,6 +400,7 @@
             this.$refs['confirmDeleteLevel'].show();
         },
         selectExportLevel: async function(value) {
+            // this.btnSaveEnabled = ( this.selCustLevel != "");
             log.info(`Custom ExportLevel selected as: ${value}`)
             if ( value == 'NewLevel') {
                 // Create new level
@@ -363,6 +410,7 @@
             else {
                 this.btnDeleteEnabled = true;
                 this.selCustLevel = value;
+                //this.btnSaveEnabled = ( this.selCustLevel != "");
             }
             this.resultList = [];
             await this.genExportLevels();
@@ -375,26 +423,22 @@
 
 
 <style scoped>
-#rowheader{
-    margin-left: 25px;
-    margin-bottom: 10px;
-}
 .list-group{
-    width: 350px;
-    height: 250px;
+    /* width: 350px; */
+    width:auto;
+    height: 200px;
     margin-bottom: 10px;
-    overflow:scroll;
+    /*overflow:scroll; */
+    overflow-y:auto;
+    min-height: 20px;
     /* -webkit-overflow-scrolling: touch; */
-    margin-right: 10px;
-    margin-left: 10px;
+    /* margin-right: 10px; */
+    /* margin-left: 10px; */
 }
 
 .ghost {
   opacity: 0.5;
   background: #c8ebfb;
-}
-.list-group {
-  min-height: 20px;
 }
 
 .list-group-item {

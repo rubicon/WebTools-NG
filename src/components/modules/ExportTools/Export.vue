@@ -1,17 +1,29 @@
 <template>
-  <b-container fluid>
+  <b-container class="m-2 mt-2">
+    <div class="float-right">   <!-- Settings button hidden with d-none -->
+      <div class="buttons">
+        <!-- Buttons -->
+        <b-button-group id="settings">
+          <b-tooltip target="settings" triggers="hover">
+              {{ $t(`Modules.${this.PageName}.ttSettings`) }}
+          </b-tooltip>
+          <button class="btn btn-outline-success" @click="showSettings"><i class="fa fa-cog"></i></button>
+        </b-button-group>
+      </div>
+    </div>
+    <div>   <!-- Title and desc -->
+      <h2>
+        {{ $t(`Modules.${this.PageName}.Name`) }}
+      </h2>
+      <h5>{{ $t(`Modules.${this.PageName}.Description`) }}</h5>
+    </div>
+    <br>
     <div class="col-lg-10 col-md-12 col-xs-12">
-      <h3>{{ $t("Modules.ET.Name") }} <br>
-        <small>{{ $t("Modules.ET.Description") }}</small>
-      </h3>
-      <br />
       <b-form-row> <!-- Select Export type -->
         <b-col> <!-- Main type -->
           <div class="d-flex align-items-center">
-            <b-form-group id="etLibTypeMainGroup" v-bind:label="$t('Modules.ET.optExpType.lblMainExp')" label-size="lg" label-class="font-weight-bold pt-0">
-              <b-tooltip target="etLibTypeMainGroup" triggers="hover">
-                {{ $t('Modules.ET.optExpType.ttExpType') }}
-              </b-tooltip>
+            <b-form-group>
+              <WTNGttlabel tt="Modules.ET.optExpType.ttExpType" label="Modules.ET.optExpType.lblMainExp" />
               <b-form-select
                 v-model="selExpTypeMain"
                 id="selExpTypeMain"
@@ -24,10 +36,8 @@
         </b-col>
         <b-col> <!-- Sec type -->
           <div class="d-flex align-items-center">
-            <b-form-group id="etLibTypeSecGroup" v-bind:label="$t('Modules.ET.optExpType.lblSecExp')" label-size="lg" label-class="font-weight-bold pt-0">
-              <b-tooltip target="etLibTypeSecGroup" triggers="hover">
-                {{ $t('Modules.ET.optExpType.ttExpTypeSec') }}
-              </b-tooltip>
+            <b-form-group>
+              <WTNGttlabel tt="Modules.ET.optExpType.ttExpTypeSec" label="Modules.ET.optExpType.lblSecExp" />
               <b-form-select
                 v-model="selExpTypeSec"
                 id="selExpTypeSec"
@@ -42,13 +52,11 @@
       <b-form-row> <!-- Select Library -->
         <b-col>
           <div class="d-flex align-items-center">
-            <b-form-group id="etLibraryGroup" v-bind:label="$t('Modules.ET.optExpType.lblSelectSelection')" label-size="lg" label-class="font-weight-bold pt-0" :disabled=this.etLibraryGroupDisabled>
+            <b-form-group :disabled=this.etLibraryGroupDisabled>
+              <WTNGttlabel tt="Modules.ET.optExpType.ttExpLibrary" label="Modules.ET.optExpType.lblSelectSelection" />
               <div ref="libSpinner" id="libSpinner" :hidden="selLibraryWait">
                 <b-spinner id="libLoad" class="ml-auto text-danger"></b-spinner>
               </div>
-              <b-tooltip target="etLibraryGroup" triggers="hover">
-                {{ $t('Modules.ET.optExpType.ttExpLibrary') }}
-              </b-tooltip>
               <b-form-select
                 v-model="selLibrary"
                 id="selLibrary"
@@ -63,10 +71,8 @@
       <b-form-row> <!-- Select Export Level -->
         <b-col>
           <div>
-            <b-form-group id="etLevelGroup" v-bind:label="$t('Modules.ET.optExpType.lblExportLevel')" label-size="lg" label-class="font-weight-bold pt-0" :disabled=this.etLevelGroupDisabled>
-              <b-tooltip target="etLevelGroup" triggers="hover">
-                {{ $t('Modules.ET.optExpType.ttExpLevel') }}
-              </b-tooltip>
+            <b-form-group :disabled=this.etLevelGroupDisabled>
+              <WTNGttlabel tt="Modules.ET.optExpType.ttExpLevel" label="Modules.ET.optExpType.lblExportLevel" />
               <b-form-select
                 class="form-control"
                 v-model="selLevel"
@@ -91,23 +97,7 @@
         {{ $t("Modules.ET.optExpType.lblBtnExportMedia") }}</b-button>
       </div>
       <br>
-      <b-container fluid> <!-- Status -->
-        <b-row>
-          <b-col sm="2">
-            <label for="status">{{ $t('Modules.ET.Status.Status') }}:</label>
-          </b-col>
-          <b-col sm="10">
-            <b-form-textarea
-              id="status"
-              v-bind:placeholder="$t('Modules.ET.Status.Status')"
-              v-model="statusMsg"
-              :disabled=true
-              rows="1"
-              max-rows="8">
-            </b-form-textarea>
-          </b-col>
-        </b-row>
-      </b-container>
+      <statusDiv /> <!-- Status Div -->
       <b-modal ref="startEnd" hide-footer v-bind:title=this.startEnd>
           <div class="d-block">
             {{ this.startEndBody }}
@@ -137,69 +127,78 @@
   import i18n from '../../../i18n';
   import { wtconfig } from '../General/wtutils';
   import { etHelper } from "./scripts/ethelper";
-
-
+  import statusDiv from '../General/status.vue';
+  import { status } from '../General/status';
+  import WTNGttlabel from '../General/wtng-ttlabel.vue'
   const log = require("electron-log");
   export default {
-      data() {
-        return {
-          exportLevels: [],
-          optExpTypeMain: [
-            {
-              "text": i18n.t('Modules.ET.optExpType.MainMovie'),
-              "value": et.ETmediaType.Movie
-            },
-            {
-              "text": i18n.t('Modules.ET.optExpType.MainTV'),
-              "value": et.ETmediaType.Show
-            },
-            {
-              "text": i18n.t('Modules.ET.optExpType.MainAudio'),
-              "value": et.ETmediaType.Artist
-            },
-            {
-              "text": i18n.t('Modules.ET.optExpType.MainPhoto'),
-              "value": et.ETmediaType.Photo,
-              "disabled": true
-            },
-            {
-              "text": i18n.t('Modules.ET.optExpType.MainPlaylist'),
-              "value": et.ETmediaType.Playlist
-            },
-            {
-              "text": i18n.t('Modules.ET.optExpType.MainLibrary'),
-              "value": et.ETmediaType.Library
-            }
-          ],
-          optExpTypeSec: [],
-          selExpTypeMain: "",
-          selExpTypeSec: "",
-          selLevel: "",
-          selLibrary: "",
-          selLibraryOptions: [],
-          selLibraryWait: true,
-          selMediaType: "",
-          selPType: "audio",
-          pListGrpDisabled: true,
-          etLibraryGroupDisabled: false,
-          etLevelGroupDisabled: false,
-          statusMsg: 'Idle',
-          startEnd: i18n.t("Modules.ET.optExpType.startStopTitle"),
-          startEndBody: i18n.t("Modules.ET.optExpType.startStopDesc"),
-          startEndBody2: i18n.t("Modules.ET.optExpType.startStopDesc2"),
-          startEndBody3: i18n.t("Modules.ET.optExpType.startStopDesc3"),
-          startEndBody4: i18n.t("Modules.ET.optExpType.startStopDesc4"),
-          startEndBtn: i18n.t("Modules.ET.optExpType.lblBtnExportMedia"),
-          itemStartNo: etHelper.Settings.currentItem,
-          itemEndNo: 0,
-          sectionMaxItems: 0
-        };
+    components: {
+      statusDiv,
+      WTNGttlabel
+    },
+    data() {
+      return {
+        PageName: "ET",
+        exportLevels: [],
+        optExpTypeMain: [
+          {
+            "text": i18n.t('Modules.ET.optExpType.MainMovie'),
+            "value": et.ETmediaType.Movie
+          },
+          {
+            "text": i18n.t('Modules.ET.optExpType.MainTV'),
+            "value": et.ETmediaType.Show
+          },
+          {
+            "text": i18n.t('Modules.ET.optExpType.MainAudio'),
+            "value": et.ETmediaType.Artist
+          },
+          {
+            "text": i18n.t('Modules.ET.optExpType.MainPhoto'),
+            "value": et.ETmediaType.Photo,
+            "disabled": true
+          },
+          {
+            "text": i18n.t('Modules.ET.optExpType.MainPlaylist'),
+            "value": et.ETmediaType.Playlist
+          },
+          {
+            "text": i18n.t('Modules.ET.optExpType.MainLibrary'),
+            "value": et.ETmediaType.Library
+          }
+        ],
+        optExpTypeSec: [],
+        selExpTypeMain: "",
+        selExpTypeSec: "",
+        selLevel: "",
+        selLibrary: "",
+        selLibraryOptions: [],
+        selLibraryWait: true,
+        selMediaType: "",
+        selPType: "audio",
+        pListGrpDisabled: true,
+        etLibraryGroupDisabled: false,
+        etLevelGroupDisabled: false,
+     //   statusMsg: 'Idle',
+        startEnd: i18n.t("Modules.ET.optExpType.startStopTitle"),
+        startEndBody: i18n.t("Modules.ET.optExpType.startStopDesc"),
+        startEndBody2: i18n.t("Modules.ET.optExpType.startStopDesc2"),
+        startEndBody3: i18n.t("Modules.ET.optExpType.startStopDesc3"),
+        startEndBody4: i18n.t("Modules.ET.optExpType.startStopDesc4"),
+        startEndBtn: i18n.t("Modules.ET.optExpType.lblBtnExportMedia"),
+        itemStartNo: etHelper.Settings.currentItem,
+        itemEndNo: 0,
+        sectionMaxItems: 0
+      };
   },
   watch: {
+    /*
     // Watch for status update
     ETStatus: function() {
       this.statusMsg = this.$store.getters.getETStatus;
     },
+ */
+
     // Watch for when selected server address is updated
     selectedServerAddress: async function(){
       // Changed, so we need to update the libraries
@@ -224,7 +223,6 @@
   created() {
     log.info("ET Created");
     this.serverSelected();
-    etHelper.updateStatusMsg( etHelper.RawMsgType.Status, i18n.t("Modules.ET.Status.Idle"));
   },
   computed: {
     ETStatus: function(){
@@ -258,6 +256,10 @@
     },
   },
   methods: {
+    // Show Settings
+    showSettings(){
+      this.$router.push({ name: 'exportsettings' })
+    },
     setItemStartNo: async function(){
       // Update settings with new start value
       etHelper.Settings.startItem = this.itemStartNo;
@@ -273,6 +275,7 @@
       // Will ask for a starting item as well as an ending item, then export
       // Start by getting the maximum and min items
       etHelper.Settings.currentItem = 0;
+      this.itemStartNo = 0;
       etHelper.Settings.baseURL = this.$store.getters.getSelectedServerAddress;
       etHelper.Settings.accessToken = this.$store.getters.getSelectedServerToken;
       etHelper.Settings.totalItems = await etHelper.getSectionSize();
@@ -366,6 +369,9 @@
         case et.ETmediaType.Track:
           reqType = et.ETmediaType.Artist;
           break;
+        case et.ETmediaType.Playlist:
+          reqType = et.ETmediaType.Playlist;
+          break;
         default:
           reqType = this.selMediaType
       }
@@ -373,10 +379,8 @@
       this.selLibrary = "";
       await this.$store.dispatch('fetchSections')
       const sections = await this.$store.getters.getPmsSections;
-      //const pListType = this.$store.getters.getSelectedPListType;
       if (Array.isArray(sections) && sections.length) {
         sections.forEach(req => {
-          //if (req.type == this.selMediaType) {
           if (req.type == reqType) {
             if (reqType == 'playlist')
             {
@@ -558,8 +562,8 @@
           return
         }
       }
-      await etHelper.clearStatus();
-      etHelper.updateStatusMsg( etHelper.RawMsgType.Status, i18n.t("Modules.ET.Status.Running"));
+      status.clearStatus();
+      status.updateStatusMsg( status.RevMsgType.Status, i18n.t("Common.Status.Msg.Processing"));
       // Populate et. settings with the selected values
       etHelper.Settings.libType = this.selMediaType;
       etHelper.Settings.Level = this.selLevel;

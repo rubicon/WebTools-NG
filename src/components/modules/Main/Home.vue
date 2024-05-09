@@ -1,44 +1,49 @@
 <template>
-  <b-container fluid>
-        <div class="col-lg-9 col-md-12 col-xs-12">
-          <h2>
-            {{ $t("Common.Home.Title") }} <br>
-            <h5>{{ $t("Common.Home.About") }}</h5>
-          </h2>
-          <br>
-          <h3>{{ $t("Common.Home.Modules") }}</h3>
-          <dl>
-            <dt>{{ $t("Modules.ET.Name") }}</dt>
-              <dd>* {{ $t("Modules.ET.Description") }} </dd>
-            <dt>{{ $t("Modules.PMS.Name") }}</dt>
-              <dd>* {{ $t("Modules.PMS.Description") }} </dd>
-            <dt>{{ $t("Modules.PlexTV.Name") }}</dt>
-              <dd>* {{ $t("Modules.PlexTV.Description") }} </dd>
-          </dl>
-        </div>
-        <b-modal ref="showUpdate" hide-footer v-bind:title=this.updateTitle >
-          <div class="d-block text-center">
-            {{ this.body }}
-            <b-form-checkbox
-                id="SkipVerCB"
-                v-model="cbSelected"
-                name="SkipVerCB"
-              >
-                {{ $t("Common.Update.Skip") }}
-            </b-form-checkbox>
-          </div>
-          <b-button class="mt-3" variant="outline-primary" block @click="visitRels">{{ this.body2 }}</b-button>
-        </b-modal>
+  <b-container class="m-2 mt-2">
+    <div>   <!-- Title and desc -->
+      <h2>
+        {{ $t(`Common.Home.Title`) }}
+      </h2>
+      <h5>{{ $t(`Common.Home.About`) }}</h5>
+    </div>
+    <br>
+    <div class="col-lg-9 col-md-12 col-xs-12">
+      <h5>{{ $t("Common.Home.Modules") }}</h5>
+      <br>
+      <dl>
+        <dt>{{ $t("Modules.Download.Name") }}</dt>
+          <dd>* {{ $t("Modules.Download.Description") }} </dd>
+        <dt>{{ $t("Modules.ET.Name") }}</dt>
+          <dd>* {{ $t("Modules.ET.Description") }} </dd>
+        <dt>{{ $t("Modules.PMS.Name") }}</dt>
+          <dd>* {{ $t("Modules.PMS.Description") }} </dd>
+        <dt>{{ $t("Modules.PlexTV.Name") }}</dt>
+          <dd>* {{ $t("Modules.PlexTV.Description") }} </dd>
+      </dl>
+    </div>
+    <b-modal ref="showUpdate" hide-footer v-bind:title=this.updateTitle >
+      <div class="d-block text-center">
+        {{ this.body }}
+        <b-form-checkbox
+            id="SkipVerCB"
+            v-model="cbSelected"
+            name="SkipVerCB"
+          >
+            {{ $t("Common.Update.Skip") }}
+        </b-form-checkbox>
+      </div>
+      <b-button class="mt-3" variant="outline-primary" block @click="visitRels">{{ this.body2 }}</b-button>
+    </b-modal>
 
-        <b-modal ref="showRelNote" scrollable hide-footer v-bind:title=this.relNoteTitle >
-          <div class="d-block text-left">
-            <ul id="v-for-object">
-              <li v-for="value in relNoteArr" v-bind:key="value">
-                {{ value }}
-              </li>
-            </ul>
-          </div>
-        </b-modal>
+    <b-modal ref="showRelNote" scrollable hide-footer v-bind:title=this.relNoteTitle >
+      <div class="d-block text-left">
+        <ul id="v-for-object">
+          <li v-for="value in relNoteArr" v-bind:key="value">
+            {{ value }}
+          </li>
+        </ul>
+      </div>
+    </b-modal>
 
   </b-container>
 
@@ -78,7 +83,7 @@ export default {
     }
   },
   mounted() {
-    log.info("Home Created");
+    log.info("[Home.vue] (mounted) Home Created");
     this.ShowReleaseNote();
     this.checkLangUpdates();
     this.UpdatePresent();
@@ -104,10 +109,10 @@ export default {
     // Is an update present?
     async UpdatePresent(){
       if (wtconfig.get('Update.Update', true)){
-        log.verbose(`Check for updates enabled`)
+        log.verbose(`[Home.vue] (UpdatePresent) Check for updates enabled`)
         // Get release page from GitHub
         const releases = await github.Releases();
-        log.verbose('Github releases', JSON.stringify(releases));
+        log.verbose('[Home.vue] (UpdatePresent) Github releases', JSON.stringify(releases));
         if (wtconfig.get('Update.Beta', true))
         {
           // Need to check both beta and rel versions
@@ -136,23 +141,24 @@ export default {
           this.ver = releases['relver'];
           this.beta = false;
         }
-        if (wtutils.AppVersion != this.ver && this.ver)
+        const compVer = wtutils.AppVersion.substr(0, wtutils.AppVersion.lastIndexOf("."));
+        if (compVer != this.ver && this.ver)
         {
           // Show an update is present
           if (this.ver == wtconfig.get('Update.SkipVer', ''))
           {
-            log.debug(`Update Deselected by user: Github-Version: ${this.ver} Current-Version: ${wtutils.AppVersion}`);
+            log.debug(`[Home.vue] (UpdatePresent) Update Deselected by user: Github-Version: ${this.ver} Current-Version: ${wtutils.AppVersion}`);
           }
           else
           {
-            log.debug(`Update present: Github-Version: ${this.ver} Current-Version: ${wtutils.AppVersion}`);
+            log.debug(`[Home.vue] (UpdatePresent) Update present: Github-Version: ${this.ver} Current-Version: ${wtutils.AppVersion}`);
             this.GitHubVersion = this.ver;
             this.$refs['showUpdate'].show();
           }
         }
       }
       else{
-        log.verbose(`Check for updates disabled`)
+        log.verbose(`[Home.vue] (UpdatePresent) Check for updates disabled`)
       }
 
     },
@@ -182,11 +188,11 @@ export default {
     async CheckExportDir() {
       if ( wtutils.ExportDirPresent )
       {
-        log.info('ExportDir OK');
+        log.info('[Home.vue] (CheckExportDir) ExportDir OK');
       }
       else
       {
-        log.error('ExportDir missing');
+        log.error('[Home.vue] (CheckExportDir) ExportDir missing');
         const bodyStr = i18n.t("Common.ErrorNoOutDirMsg");
         this.$bvToast.toast(bodyStr, {
           title: this.$t("Common.ErrorNoOutDirTitle"),

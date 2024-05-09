@@ -9,12 +9,12 @@ module.exports = {
       enableInSFC: false
     },
     electronBuilder: {
-      builderOptions: {        
+      builderOptions: {
         appId: "com.webtools.webtools-ng",
         artifactName: "${productName}-${version}.${env.AppRev}.${ext}",
         directories: {
           "buildResources": "src/assets"
-        },        
+        },
         "extraResources": [
           {
             "from": "./public/locales",
@@ -36,9 +36,25 @@ module.exports = {
         mac: {
           icon: './src/assets/WebTools-512.icns',
           target: 'dmg'
+        },
+        "nsis": {
+          "differentialPackage": false
+        },
+        "dmg": {
+          "writeUpdateInfo": false
         }
-
       }
     }
   }
+}
+
+config => {
+  config.module
+      .rule('vue')
+      .use('vue-loader')
+      .loader('vue-loader')
+      .tap(options => {
+          options.compilerOptions.preserveWhitespace = true
+          return options
+      })
 }

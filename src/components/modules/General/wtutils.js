@@ -3,7 +3,9 @@ This file contains different functions and methods
 that we use in our solution.
  */
 
-//import i18n from '../../../i18n';
+//import storeStatus from '../../store';
+
+//storeStatus
 
 const log = require('electron-log');
 console.log = log.log;
@@ -16,6 +18,16 @@ const wtutils = new class WTUtils {
 
     constructor() {
         this.logFileName = this.AppName + '.log';
+        this.plexTVApi = 'https://plex.tv/api/';
+    }
+
+    envVarLocal( envName ){
+        // This will return the value of a line defined in /locales/.env.local
+        const { readFileSync } = require('fs');
+        const data = readFileSync( wtutils.Home + '/locales/.env.local', 'utf8').split(/[\n\r]/);
+        const matches = data.filter(s => s.includes(envName));
+        const retval = matches[0].split('=')[1];
+        return retval;
     }
 
     get ConfigFileName(){
@@ -25,9 +37,7 @@ const wtutils = new class WTUtils {
     }
 
     get ExportDirPresent(){
-
-
-        log.info('Checking ExportPath')
+        log.info('[wtutils.js] (ExportDirPresent) Checking ExportPath')
         const ExportPath = wtconfig.get('General.ExportPath', 'N/A');
         if ( ExportPath == 'N/A' ){
             log.error('ExportPath not defined');
@@ -40,7 +50,7 @@ const wtutils = new class WTUtils {
             if (!fs.existsSync(appExportDir))
             {
                 log.debug('Export dir existed, but AppDir didnt')
-                fs.mkdirSync(appExportDir)
+                fs.mkdirSync(appExportDir, { recursive: true })
                 if (fs.existsSync(appExportDir))
                 {
                     return true;
@@ -149,6 +159,10 @@ const wtutils = new class WTUtils {
         return (electron.app || electron.remote.app).getVersion() + '.' + this.Rev;
     }
 
+    get ShortAppVersion() {
+        return (electron.app || electron.remote.app).getVersion();
+    }
+
     get LangFiles() {
         const langFiles = []
         var fs = require('fs');
@@ -209,30 +223,93 @@ const wtutils = new class WTUtils {
         var last = wtconfig.get('General.transfilescopied', "0")
         if (!(last == wtutils.AppVersion))
         {
-            log.debug('We need to copy translation strings over')
+            log.debug('[wtutils.js] (MoveToHome) We need to copy translation strings over')
             var fs = require('fs');
             // Check if userdata/locales exists, and create if not
             var TargetDir = wtutils.Home + '/locales';
             if (!fs.existsSync(TargetDir)){
                 log.debug('locales directory needs to be created');
-                fs.mkdirSync(TargetDir);
+                fs.mkdirSync(TargetDir, { recursive: true });
             }
             const items = fs.readdirSync(localHome)
             for (var i=0; i<items.length; i++) {
                 var SourceFile = localHome + '/' + items[i];
                 var TargetFile = TargetDir + '/' + items[i];
-                log.debug('Copying ' + SourceFile + ' to ' + TargetFile);
+                log.debug('[wtutils.js] (MoveToHome) Copying ' + SourceFile + ' to ' + TargetFile);
                 fs.copyFile(SourceFile, TargetFile, err => {
                     if (err) return console.error(err)
                 });
             }
             wtconfig.set('General.transfilescopied', wtutils.AppVersion)
-            }
+        }
+    }
+
+    async sleep(ms) {
+        return new Promise((resolve) => {
+          setTimeout(resolve, ms);
+        });
+    }
+
+    hideMenu(menu)
+    {
+        let retVal = false;
+        log.debug(`[wtutils.js] (hideMenu) Start menu check for ${menu}`);
+        // If indeveloper mode, always return false
+        if (this.isDev){
+            log.debug('[wtutils.js] (hideMenu) We are running in dev mode, so turn on all menues');
+            retVal = false;
+        }
+        else
+        {
+            retVal = wtconfig.get('Menu.' + menu, true);
+        }
+        log.debug(`[wtutils.js] (hideMenu) Menu returning ${retVal}`);
+        return retVal
     }
 
     UpdateConfigFile() {
         // Update config file with defaults if missing
-        log.verbose('Updating config file');
+        log.verbose('[wtutils.js] (UpdateConfigFile) Updating config file');
+        // Hide/Show Menu Set to false if enabled for all
+        if ( wtconfig.get('Menu.download', 'N/A') == 'N/A' ){
+            wtconfig.set('Menu.download', false)
+        }
+        if ( wtconfig.get('Menu.pmsFindMedia', 'N/A') == 'N/A' ){
+            wtconfig.set('Menu.pmsFindMedia', false)
+        }
+        if ( wtconfig.get('Menu.plextv', 'N/A') == 'N/A' ){
+            wtconfig.set('Menu.plextv', false)
+        }
+        if ( wtconfig.get('Menu.pms', 'N/A') == 'N/A' ){
+            wtconfig.set('Menu.pms', false)
+        }
+        if ( wtconfig.get('Menu.pmsSettings', 'N/A') == 'N/A' ){
+            wtconfig.set('Menu.pmsSettings', false)
+        }
+        if ( wtconfig.get('Menu.pmsButler', 'N/A') == 'N/A' ){
+            wtconfig.set('Menu.pmsButler', false)
+        }
+        if ( wtconfig.get('Menu.pmsViewState', 'N/A') == 'N/A' ){
+            wtconfig.set('Menu.pmsViewState', false)
+        }
+        if ( wtconfig.get('Menu.et', 'N/A') == 'N/A' ){
+            wtconfig.set('Menu.et', false)
+        }
+        if ( wtconfig.get('Menu.etSettings', 'N/A') == 'N/A' ){
+            wtconfig.set('Menu.etSettings', false)
+        }
+        if ( wtconfig.get('Menu.etCustom', 'N/A') == 'N/A' ){
+            wtconfig.set('Menu.etCustom', false)
+        }
+        if ( wtconfig.get('Menu.Language', 'N/A') == 'N/A' ){
+            wtconfig.set('Menu.Language', false)
+        }
+        if ( wtconfig.get('Menu.Settings', 'N/A') == 'N/A' ){
+            wtconfig.set('Menu.Settings', false)
+        }
+        if ( wtconfig.get('Menu.About', 'N/A') == 'N/A' ){
+            wtconfig.set('Menu.About', false)
+        }
         // General section
         if ( wtconfig.get('General.username', 'N/A') == 'N/A' ){
             wtconfig.set('General.username', '')
@@ -289,6 +366,19 @@ const wtutils = new class WTUtils {
         }
         if ( wtconfig.get('PMS.ContainerSize.3001', 'N/A') == 'N/A' ){
             wtconfig.set('PMS.ContainerSize.3001', 20)
+        }
+        if ( wtconfig.get('PMS.FindMedia.Settings.Ext', 'N/A') == 'N/A' ){
+            wtconfig.set('PMS.FindMedia.Settings.Ext', [
+                "3g2","3gp","asf","asx","avc",
+                "avi","avs","bivx","bup","divx",
+                "dv","dvr-ms","evo","fli","flv",
+                "m2t","m2ts","m2v","m4v","mkv",
+                "mov","mp4","mpeg","mpg","mts",
+                "nsv","nuv","ogm","ogv","tp",
+                "pva","qt","rm","rmvb","sdp",
+                "svq3","strm","ts","ty","vdr",
+                "viv","vob","vp3","wmv","wpl",
+                "wtv","xsp","xvid","webm"])
         }
         // ET Settings
         if ( wtconfig.get('ET.ChReturn', 'N/A') == 'N/A' ){
@@ -446,11 +536,6 @@ const wtutils = new class WTUtils {
             wtconfig.set('ET.CustomLevels.2002', wtconfig.get('ET.CustomLevels.playlist-video', 'N/A'));
             wtconfig.delete('ET.CustomLevels.playlist-video');
         }
-
-
-
-
-        
         // All done, so stamp version number
         wtconfig.set('General.version', wtutils.AppVersion)
     }
@@ -486,9 +571,27 @@ const dialog = new class Dialog {
         return aboutWindow
     }
 
+    ShowMsg(Title, OKLabel, MsgHeader, Msg, Type)
+    {
+        log.debug(`[wtutils.js] (ShowMsg) Open ShowMsg Dialog`);
+        const {remote} = require('electron'),
+        dialog = remote.dialog,
+        WIN = remote.getCurrentWindow();
+        let options = {
+            buttons: [OKLabel],
+            title: MsgHeader,
+            message: Title,
+            detail: Msg,
+            type: Type,
+            noLink: true
+        }
+        let showMsgWindow = dialog.showMessageBox(WIN, options)
+        return showMsgWindow
+    }
+
     OpenDirectory(Title, OKLabel)
     {
-        log.debug('Start OpenDirectory Dialog')
+        log.debug('[wtutils.js] (OpenDirectory) - Start OpenDirectory Dialog')
        // const {remote, app} = require('electron'),
        const {remote} = require('electron'),
         dialog = remote.dialog,
@@ -498,11 +601,27 @@ const dialog = new class Dialog {
             buttonLabel : OKLabel,
             title: Title
         }
-
         let dirName = dialog.showOpenDialogSync(WIN, options)
-        log.debug('Returned directoryname is: ' + dirName)
+        log.debug('[wtutils.js] (OpenDirectory) - Returned directoryname is: ' + dirName)
         return dirName
+    }
 
+    SelectFile(Title, OKLabel, filter, defaultPath)
+    {
+        log.debug('Start SelectFile Dialog');
+        const {remote} = require('electron'),
+        dialog = remote.dialog,
+        WIN = remote.getCurrentWindow();
+        let options = {
+            properties:["openFile"],
+            buttonLabel : OKLabel,
+            title: Title,
+            filters: filter,
+            defaultPath: defaultPath
+        }
+        let fileName = dialog.showOpenDialogSync(WIN, options);
+        log.debug('Returned filename is: ' + fileName)
+        return fileName
     }
 
     SaveFile(title, defaultPath, OKLabel) {
@@ -527,6 +646,20 @@ const dialog = new class Dialog {
         log.debug('Returned filename is: ' + filename)
         return filename
     }
+
+    ShowMsgBox(message, type, title, buttons){
+        const {remote} = require('electron'),
+        dialog = remote.dialog,
+
+        WIN = remote.getCurrentWindow();
+        let options = {
+            message: message,
+            type: type,
+            title: title,
+            buttons: buttons
+        }
+        return dialog.showMessageBoxSync(WIN, options);
+    }
 }
 
 const github = new class GitHub {
@@ -545,10 +678,16 @@ const github = new class GitHub {
         await axios(this.changeLogUrl)
             .then(response => {
                 this.data = response.data;
-                resp = this.data.split("## ")[1];
-                resp = resp.split('## ')[0];
+//                resp = this.data.split("## ")[1];
+//                resp = resp.split('## ')[0];
+                resp = this.data;
             })
             .catch(console.error);
+            // Cut so we only show this version
+            //var ShortAppVersion = '0.3.11';
+            var ShortAppVersion = wtutils.ShortAppVersion;
+            resp = resp.substring(resp.indexOf("## V" + ShortAppVersion));
+            resp = resp.substring(0, resp.indexOf("## V", 2));
             // Remove link from lines
             const regex = /\([^)]*\)/ig;
             resp = resp.replaceAll(regex, '');
@@ -556,14 +695,12 @@ const github = new class GitHub {
             resp = resp.replaceAll('* [', '').replaceAll(']','');
             // Split into an array
             resp = resp.split("\n");
-            // Remove empty items
-            resp = resp.filter(item => item);
             return resp;
         }
 
     // Get the releases from GitHub
     async Releases(){
-        log.debug('Checking for Github updates')
+        log.debug('[wtutils.js] (Releases) Checking for Github updates')
         const fetch = require('node-fetch');
         const response = await fetch(this.releaseUrl);
         const releases = await response.json();
@@ -582,7 +719,7 @@ const github = new class GitHub {
                 break;
             }
             if (!rels['beta'] && releases[i].prerelease){
-                log.verbose(`Found beta version ${releases[i].tag_name}`)
+                log.verbose(`[wtutils.js] (Releases) Found beta version ${releases[i].tag_name}`)
                 rels['betaver'] = releases[i].tag_name;
                 rels['beta'] = true;
                 rels['betaname'] = releases[i].name;
@@ -591,7 +728,7 @@ const github = new class GitHub {
                 rels['betadateFull'] = releases[i].published_at;
             }
             else if (!rels['rel'] && !releases[i].prerelease){
-                log.verbose(`Found release version ${releases[i].tag_name}`)
+                log.verbose(`[wtutils.js] (Releases) Found release version ${releases[i].tag_name}`)
                 rels['relver'] = releases[i].tag_name;
                 rels['rel'] = true;
                 rels['relname'] = releases[i].name;
@@ -627,6 +764,5 @@ const github = new class GitHub {
         return rels;
     }
 }
-
 
 export {wtutils, wtconfig, dialog, github};

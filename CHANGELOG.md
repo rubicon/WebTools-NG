@@ -1,6 +1,196 @@
-# ![Logo](https://github.com/WebTools-NG/WebTools-NG/blob/master/src/assets/WebTools-48x48.png) WebTools-ng Change log
+# ![Logo](https://github.com/WebTools-NG/WebTools-NG/blob/master/src/assets/WebTools-48x48.png) WebTools-NG Change log
 
-## V0.3.13 (Release pending)
+## V1.2.2 ( Not yet released )
+
+**Note**: In this version, the following is disabled:
+
+* Export to xlsx format ([See #331](https://github.com/WebTools-NG/WebTools-NG/issues/331))
+* Photo export
+
+**Changes**:
+
+* [#493 We need Volta to ensure all is running the same version](https://github.com/WebTools-NG/WebTools-NG/issues/493) (Dev)
+
+## V1.2.1 ( 20221206 )
+
+**Note**: In this version, the following is disabled:
+
+* Export to xlsx format ([See #331](https://github.com/WebTools-NG/WebTools-NG/issues/331))
+* Photo export
+
+**Changes**:
+
+* [#646 File Count on Download module page](https://github.com/WebTools-NG/WebTools-NG/issues/646) (Enhancement)
+* [#647 Download item selection](https://github.com/WebTools-NG/WebTools-NG/issues/647) (Enhancement)
+* [#650 Module order is out of order](https://github.com/WebTools-NG/WebTools-NG/issues/650) (Enhancement)
+* [#656 Using Usr/Pwd to logon gives an error](https://github.com/WebTools-NG/WebTools-NG/issues/656) (Bug)
+
+## V1.2.0 ( 20221203 )
+
+**Note**: In this version, the following is disabled:
+
+* Export to xlsx format ([See #331](https://github.com/WebTools-NG/WebTools-NG/issues/331))
+* Photo export
+
+**Changes**:
+
+* [#563 Viewstate copy and User Ratings](https://github.com/WebTools-NG/WebTools-NG/issues/563) (Enhancement)
+* [#610 Viewstate Copy doesn't copy partial viewed offsets](https://github.com/WebTools-NG/WebTools-NG/issues/610) (Bug)
+* [#619 Allow to paste token into login screen](https://github.com/WebTools-NG/WebTools-NG/issues/619) (Enhancement)
+* [#507 Download Module (Movies)](https://github.com/WebTools-NG/WebTools-NG/issues/507) (Enhancement)
+* [#625 Media Info HDR types in Export](https://github.com/WebTools-NG/WebTools-NG/issues/625) (Enhancement)
+* [#621 ET Audio Display title shorten](https://github.com/WebTools-NG/WebTools-NG/issues/621) (Enhancement)
+* [#622 Export DVR specific tags](https://github.com/WebTools-NG/WebTools-NG/issues/622) (Enhancement)
+* [#643 Output all 'Export' fields failed to proceed](https://github.com/WebTools-NG/WebTools-NG/issues/643) (Bug)
+
+## V1.1.2 ( 20220925 )
+
+**Note**: In this version, the following is disabled:
+
+* Export to xlsx format ([See #331](https://github.com/WebTools-NG/WebTools-NG/issues/331))
+* Photo export
+
+**Changes**:
+
+* [#598 Refactor tvdb rutines](https://github.com/WebTools-NG/WebTools-NG/issues/598) (Internal)
+* [#597 Add PMS Season/EP Count to FindMissing](https://github.com/WebTools-NG/WebTools-NG/issues/597) (Enhancement)
+* [#603 Find Missing Episodes Reorder columns](https://github.com/WebTools-NG/WebTools-NG/issues/603) (Enhancement)
+* [#596 Find missing episodes specials](https://github.com/WebTools-NG/WebTools-NG/issues/596) (Enhancement)
+* [#607 Find Missing Episodes and episodes in the future](https://github.com/WebTools-NG/WebTools-NG/issues/607) (Enhancement)
+
+## V1.1.1 ( 20220917 )
+
+**Note**: In this version, the following is disabled:
+
+* Export to xlsx format ([See #331](https://github.com/WebTools-NG/WebTools-NG/issues/331))
+* Photo export
+
+**Changes**:
+
+* [#573 Add tvdb to find missing episodes](https://github.com/WebTools-NG/WebTools-NG/issues/573) (Enhancement)
+
+## V1.1.0 ( 20220913 )
+
+**Note**: In this version, the following is disabled:
+
+* Export to xlsx format ([See #331](https://github.com/WebTools-NG/WebTools-NG/issues/331))
+* Photo export
+
+**Changes**:
+
+* [#547 Add link to Library Map on FM Settings page](https://github.com/WebTools-NG/WebTools-NG/issues/547) (Enhancement)
+* [#552 Export posters and art in original size](https://github.com/WebTools-NG/WebTools-NG/issues/552) (Enhancement)
+* [#550 Export posters for Seasons and Shows](https://github.com/WebTools-NG/WebTools-NG/issues/550) (Enhancement)
+* [#551 Exporting posters and Arts into tree](https://github.com/WebTools-NG/WebTools-NG/issues/551) (Enhancement)
+* [#553 Request Tooltips be replaced with Info or ? icons](https://github.com/WebTools-NG/WebTools-NG/issues/553) (Enhancement)
+* [#561 Find episodes I miss in my library](https://github.com/WebTools-NG/WebTools-NG/issues/561) (Enhancement)
+* [#554 Find Media and extended characters](https://github.com/WebTools-NG/WebTools-NG/issues/554) (Bug)
+* [#570 Find Media and Multi Episodes](https://github.com/WebTools-NG/WebTools-NG/issues/570) (Bug)
+* Added credits to tmdb.org for allowing us to use their API for free (Internal)
+* Added credits to thetvdb.com for allowing us to use their API for free (Internal)
+* [#574 Make secrets work on both Github and local](https://github.com/WebTools-NG/WebTools-NG/issues/574) (Internal)
+* [#583 Update About screen to look better](https://github.com/WebTools-NG/WebTools-NG/issues/583) (Enhancement)
+* [#586 Export Episodes containing Export Season Posters fails to proceed](https://github.com/WebTools-NG/WebTools-NG/issues/586) (Bug)
+
+## V1.0.0 First Official Release (20220724)
+
+**Note**: In this version, the following is disabled:
+
+* Export to xlsx format ([See #331](https://github.com/WebTools-NG/WebTools-NG/issues/331))
+* Photo export
+
+**Changes**:
+
+* [#498 Add preferences to shows export](https://github.com/WebTools-NG/WebTools-NG/issues/498) (New Feature)
+* [#500 Library Path Mapping](https://github.com/WebTools-NG/WebTools-NG/issues/500) (New Feature)
+* [#505 FindMedia](https://github.com/WebTools-NG/WebTools-NG/issues/505) (New Module)
+* [#509 Refactor Settings](https://github.com/WebTools-NG/WebTools-NG/issues/509) (Internal)
+* [#512 ET Intro Start/End isn't exported](https://github.com/WebTools-NG/WebTools-NG/issues/512) (Bug fix)
+* [#514 Bring back EN translations from Romain](https://github.com/WebTools-NG/WebTools-NG/issues/514) (Internal)
+* [#508 No timestamp in output file](https://github.com/WebTools-NG/WebTools-NG/issues/508) (New Feature)
+* [#521 Inconsistent Font sizing and spacing](https://github.com/WebTools-NG/WebTools-NG/issues/521) (Bug fix)
+* [#529 Spelling error in ET file range dialogue](https://github.com/WebTools-NG/WebTools-NG/issues/529) (Bug fix)
+* [#531 Date-Time settings missing from settings](https://github.com/WebTools-NG/WebTools-NG/issues/531) (Bug fix)
+* [#530 ET Suggested file naming - incorrect output](https://github.com/WebTools-NG/WebTools-NG/issues/530) (Bug fix)
+* [#538 ET Library output needs the Library Title in 1st Column](https://github.com/WebTools-NG/WebTools-NG/issues/538) (Bug fix)
+* [#537 ET Custom Level - blank with no name](https://github.com/WebTools-NG/WebTools-NG/issues/537) (Bug fix)
+* [#543 ET Limit Export dialogue shows start value equal to end value](https://github.com/WebTools-NG/WebTools-NG/issues/543) (Bug fix)
+* [#542 Export Art & Posters NOT honouring the Dimension settings](https://github.com/WebTools-NG/WebTools-NG/issues/542) (Bug fix)
+
+## V0.3.17 (20220601)
+
+**Note**:   This version is a Beta version
+
+**Note 2**: In this version, the following is disabled:
+
+* Export to xlsx format ([See #331](https://github.com/WebTools-NG/WebTools-NG/issues/331))
+* Photo export
+
+**Changes**:
+
+* [#486 ET Modules Year on shows not working](https://github.com/WebTools-NG/WebTools-NG/issues/486)
+* [#488 ExportTools Settings cannot input any text at all](https://github.com/WebTools-NG/WebTools-NG/issues/488)
+* [#487 ET Settings Page missing text](https://github.com/WebTools-NG/WebTools-NG/issues/487)
+* Internal: Updated node.js to V16.13
+* [#494 ET Export optimized versions name](https://github.com/WebTools-NG/WebTools-NG/issues/494)
+* [#392 Audio Album Export missing artist](https://github.com/WebTools-NG/WebTools-NG/issues/392)
+* [#467 Non-Localized Time](https://github.com/WebTools-NG/WebTools-NG/issues/467)
+
+## V0.3.16 (20220511)
+
+**Note**:   This version is a Beta version
+
+**Note 2**: In this version, the following is disabled:
+
+* Export to xlsx format ([See #331](https://github.com/WebTools-NG/WebTools-NG/issues/331))
+* Photo export
+
+**Changes**:
+
+* [#469 Default ExportTools Levels do NOT produce any output](https://github.com/WebTools-NG/WebTools-NG/issues/469)
+* [#468 Add "Last Viewed at" as an available field for TV Show Episode exporting](https://github.com/WebTools-NG/WebTools-NG/issues/468)
+* [#473 PMS Root page](https://github.com/WebTools-NG/WebTools-NG/issues/473)
+* [#459 Viewstate copy](https://github.com/WebTools-NG/WebTools-NG/issues/459)
+* [#476 Refactor status dialog](https://github.com/WebTools-NG/WebTools-NG/issues/476)
+* [#460 Custom Export Tools incorrectly parses part file and part file path](https://github.com/WebTools-NG/WebTools-NG/issues/460)
+* [#456 ET Custom levels doesn't use include params](https://github.com/WebTools-NG/WebTools-NG/issues/456)
+* [#478 Refactor time and status for ET Module](https://github.com/WebTools-NG/WebTools-NG/issues/478)
+* [#463 plex.tv add friendly name](https://github.com/WebTools-NG/WebTools-NG/issues/463)
+* [#398 Playlists imported from music.app doesn't show](https://github.com/WebTools-NG/WebTools-NG/issues/398)
+* [#461 ET media and metadata](https://github.com/WebTools-NG/WebTools-NG/issues/461)
+
+## V0.3.15 (20220413)
+
+**Note**:   This version is an Beta version
+
+**Note 2**: In this version, the following is disabled:
+
+* Export to xlsx format ([See #331](https://github.com/WebTools-NG/WebTools-NG/issues/331))
+* Photo Library export
+
+**Changes**:
+
+* [#453 Kickstart Butler Scheduled tasks](https://github.com/WebTools-NG/WebTools-NG/issues/453)
+* [#456 ET Custom levels doesn't use include params](https://github.com/WebTools-NG/WebTools-NG/issues/456)
+* Internal: More easy way to hide stuff in progress
+
+## V0.3.14 (20220323)
+
+**Note**:   This version is an Beta version
+
+**Note 2**: In this version, the following is disabled:
+
+* Export to xlsx format ([See #331](https://github.com/WebTools-NG/WebTools-NG/issues/331))
+* Photo export
+
+**Changes**:
+
+* [#429 Allow setting the LogNumFiles from Settings](https://github.com/WebTools-NG/WebTools-NG/issues/429)
+* [#435 Showing Rel Notes should only show current version](https://github.com/WebTools-NG/WebTools-NG/issues/435)
+* [#424 Export for severs with special charters in server name](https://github.com/WebTools-NG/WebTools-NG/issues/424)
+* [#444 ET: Suggest better naming for movies only](https://github.com/WebTools-NG/WebTools-NG/issues/444)
+
+## V0.3.13 (20220102)
 
 **Note**:   This version is an Beta version
 

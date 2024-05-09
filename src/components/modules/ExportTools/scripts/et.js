@@ -4,25 +4,17 @@ var defFields = JSON.parse(JSON.stringify(require('./../defs/def-Fields.json')))
 
 const log = require('electron-log');
 console.log = log.log;
-//const defpostURI = '?checkFiles=1&includeRelated=0&includeExtras=1&includeBandwidths=1&includeChapters=1'
+
 
 import {wtconfig, wtutils} from '../../General/wtutils';
 
-//import {etHelper} from './ethelper';
-//import i18n from '../../../../i18n';
-
 import i18n from '../../../../i18n'
-
-import {ipcRenderer} from 'electron';
-//const fs = require('fs');
-
-var path = require("path");
 
 const fetch = require('node-fetch');
 
 const {JSONPath} = require('jsonpath-plus');
 import axios from 'axios'
-//import store from '../../../../store';
+
 
 const et = new class ET {
     constructor() {
@@ -156,82 +148,7 @@ const et = new class ET {
         },
         this.StartTime = null,
         this.EndTime = null,
-        this.OutFile = null,
-        this.revRawMsgTypeOLDDELGED = {
-            1: 'Status',
-            2: 'Info',
-            3: 'Chuncks',
-            4: 'Items',
-            5: 'OutFile',
-            6: 'StartTime',
-            7: 'EndTime',
-            8: '1TimeElapsed',
-            9: 'RunningTime'
-        },
-        this.msgTypeOLDDELGED = {
-            1: i18n.t("Modules.ET.Status.Names.Status"),
-            2: i18n.t("Modules.ET.Status.Names.Info"),
-            3: i18n.t("Modules.ET.Status.Names.Chuncks"),
-            4: i18n.t("Modules.ET.Status.Names.Items"),
-            5: i18n.t("Modules.ET.Status.Names.OutFile"),
-            6: i18n.t("Modules.ET.Status.Names.StartTime"),
-            7: i18n.t("Modules.ET.Status.Names.EndTime"),
-            8: i18n.t("Modules.ET.Status.Names.TimeElapsed"),
-            9: i18n.t("Modules.ET.Status.Names.RunningTime")
-        }
-    }
-
-
-    async GEDDELETE_getSectionData()
-    {
-        const sectionData = []
-        // Find LibType steps
-        const step = wtconfig.get("PMS.ContainerSize." + this.expSettings.libType, 20)
-        log.debug(`!!!! et (getSectionData): Got Step size as: ${step}`)
-        let element
-        // Now read the fields and level defs
-        // Current item
-        let idx = 0
-        // Now let's walk the section
-        let chuncks, postURI
-        let size
-        do {
-            switch (this.expSettings.libType) {
-                case et.ETmediaType.Photo:
-                    element = '/library/sections/' + this.expSettings.selLibKey + '/all';
-                    postURI = `?addedAt>>=-2208992400&X-Plex-Container-Start=${idx}&X-Plex-Container-Size=${step}&type=${this.expSettings.libTypeSec}&${this.uriParams}`;
-                    break;
-                case et.ETmediaType.Playlist:
-                    element = '/playlists/' + this.expSettings.selLibKey;
-                    postURI = `/items?X-Plex-Container-Start=${idx}&X-Plex-Container-Size=${step}`;
-                    break;
-                case et.ETmediaType.Libraries:
-                    element = '/library/sections/all';
-                    postURI = `?X-Plex-Container-Start=${idx}&X-Plex-Container-Size=${step}`;
-                    break;
-                case et.ETmediaType.Playlists:
-                    element = '/playlists/all';
-                    postURI = `?X-Plex-Container-Start=${idx}&X-Plex-Container-Size=${step}`;
-                    break;
-                default:
-                    element = '/library/sections/' + this.expSettings.selLibKey + '/all';
-                    postURI = `?X-Plex-Container-Start=${idx}&X-Plex-Container-Size=${step}&type=${this.expSettings.libTypeSec}&${this.uriParams}`;
-            }
-            log.info(`Calling getSectionData url ${this.expSettings.baseURL + element + postURI}`);
- 
-            chuncks = await et.getItemData({baseURL: this.expSettings.baseURL, accessToken: this.expSettings.accessToken, element: element, postURI: postURI});
-            size = JSONPath({path: '$.MediaContainer.size', json: chuncks});
-            const totalSize = JSONPath({path: '$.MediaContainer.totalSize', json: chuncks});
-            log.info(`getSectionData chunck size is ${size} and idx is ${idx} and totalsize is ${totalSize}`)
-            // et.updateStatusMsg(et.rawMsgType.Info, i18n.t('Modules.ET.Status.GetSectionItems', {idx: idx, chunck: size, totalSize: totalSize}))
-            et.updateStatusMsg(et.rawMsgType.Info, i18n.t('Modules.ET.Status.GetSectionItems', {chunck: step, totalSize: totalSize}))
-            sectionData.push(chuncks)
-            log.debug(`Pushed chunk as ${JSON.stringify(chuncks)}`)
-            idx = idx + step;
-        } while (size > 1);
-        log.debug(`SectionData to return is:`);
-        log.debug(JSON.stringify(sectionData));
-        return sectionData;
+        this.OutFile = null
     }
 
     getRealLevelName(level, libType) {
@@ -256,47 +173,6 @@ const et = new class ET {
         }
         et.expSettings.levelName = levelName;
         return levelName;
-    }
-
-    async getSections(address, accessToken)
-    {
-        // Returns an array of json, as:
-        // [{"title":"DVR Movies","key":31,"type":"movie"}]
-        const result = [];
-        let url = address + '/library/sections/all'
-        this.PMSHeader["X-Plex-Token"] = accessToken;
-        let response = await fetch(url, { method: 'GET', headers: this.PMSHeader});
-        let resp = await response.json();
-        let respJSON = await Promise.resolve(resp);
-        let sections = await JSONPath({path: '$..Directory', json: respJSON})[0];
-        let section;
-        for (section of sections){
-            const subItem = {}
-            subItem['title'] = JSONPath({path: '$..title', json: section})[0];
-            subItem['key'] = parseInt(JSONPath({path: '$..key', json: section})[0]);
-            subItem['type'] = JSONPath({path: '$..type', json: section})[0];
-            subItem['scanner'] = JSONPath({path: '$..scanner', json: section})[0];
-            subItem['agent'] = JSONPath({path: '$..agent', json: section})[0];
-            result.push(subItem)
-        }
-        await Promise.resolve(result);
-        url = address + '/playlists';
-        response = await fetch(url, { method: 'GET', headers: this.PMSHeader});
-        resp = await response.json();
-        respJSON = await Promise.resolve(resp);
-        if (JSONPath({path: '$..size', json: respJSON})[0] > 0)
-        {
-            sections = await JSONPath({path: '$..Metadata', json: respJSON})[0];
-            for (section of sections){
-                const subItem = {}
-                subItem['title'] = JSONPath({path: '$..title', json: section})[0];
-                subItem['key'] = parseInt(JSONPath({path: '$..ratingKey', json: section})[0]);
-                subItem['type'] = JSONPath({path: '$..type', json: section})[0];
-                subItem['playlistType'] = JSONPath({path: '$..playlistType', json: section})[0];
-                result.push(subItem)
-            }
-        }
-        return  result
     }
 
     getLevelDisplayName(level, libType){
@@ -730,102 +606,6 @@ const excel2 = new class Excel {
         else
         {
             return val;
-        }
-    }
-
-    async OLDDELforceDownload(url, target) {
-        const _this = this;
-        return new Promise((resolve, reject) => {
-            try
-            {
-                _this.isDownloading = true;
-                ipcRenderer.send('downloadFile', {
-                    item: url,
-                    filePath: target
-                })
-            }
-            catch (error)
-            {
-                log.error(`Exception in et.js forceDownload was: ${error}`);
-            }
-           
-            ipcRenderer.on('downloadEnd', () => {
-                try
-                {
-                    ipcRenderer.removeAllListeners('downloadEnd');
-                    ipcRenderer.removeAllListeners('downloadError');
-                    resolve(target);
-                }
-                catch (error)
-                {
-                    log.error(`Exception in et.js forceDownload-downloadEnd was: ${error}`);
-                }                
-            })
-
-            ipcRenderer.on('downloadError', (event, error) => {
-                ipcRenderer.removeAllListeners('downloadEnd');
-                ipcRenderer.removeAllListeners('downloadError');
-                reject(error);
-            })
-        })
-    }
-
-    async OLD_DELexportPics( { type: extype, data, baseURL, accessToken} ) {
-        let ExpDir, picUrl, resolutions;
-        log.verbose(`Going to export ${extype}`);
-        try
-        {
-            if (extype == 'posters')
-            {
-                picUrl = String(JSONPath({path: '$.thumb', json: data})[0]);
-                resolutions = wtconfig.get('ET.Posters_Dimensions', '75*75').split(',');
-                ExpDir = path.join(
-                    wtconfig.get('General.ExportPath'),
-                    wtutils.AppName,
-                    'ExportTools', 'Posters');
-            }
-            else
-            {
-                picUrl = String(JSONPath({path: '$.art', json: data})[0]);
-                resolutions = wtconfig.get('ET.Art_Dimensions', '75*75').split(',');
-                ExpDir = path.join(
-                    wtconfig.get('General.ExportPath'),
-                    wtutils.AppName,
-                    'ExportTools', 'Art');
-            }
-        }
-        catch (error)
-        {
-            log.error(`Exception in exportPics is: ${error}`);
-        }
-        log.verbose(`picUrl is: ${picUrl}`);
-        log.verbose(`resolutions is: ${JSON.stringify(resolutions)}`);
-        log.verbose(`ExpDir is: ${ExpDir}`);
-        // Create export dir
-        var fs = require('fs');
-        if (!fs.existsSync(ExpDir)){
-            fs.mkdirSync(ExpDir);
-        }
-        let key = String(JSONPath({path: '$.ratingKey', json: data})[0]);
-        let title = String(JSONPath({path: '$.title', json: data})[0]);
-        // Get resolutions to export as
-        for(let res of resolutions) {
-            const fileName = key + '_' + title.replace(/[/\\?%*:|"<>]/g, ' ').trim() + '_' + res.trim().replace("*", "x") + '.jpg';
-            let outFile = path.join(
-                ExpDir,
-                fileName
-                );
-            // Build up pic url
-            const width = res.split('*')[1].trim();
-            const hight = res.split('*')[0].trim();
-            let URL = baseURL + '/photo/:/transcode?width=';
-            URL += width + '&height=' + hight;
-            URL += '&minSize=1&url=';
-            URL += picUrl;
-            log.verbose(`Url for ${extype} is ${URL}`);
-            log.verbose(`Outfile is ${outFile}`);
-            URL += '&X-Plex-Token=' + accessToken;
-            await this.forceDownload(URL, outFile);
         }
     }
 
